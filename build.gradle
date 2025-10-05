@@ -1,0 +1,94 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.6'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.netflix.dgs.codegen' version '7.0.3'
+    id 'org.graalvm.buildtools.native' version '0.10.6'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+description = 'book-network-api'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(24)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springModulithVersion', "1.4.1")
+}
+
+dependencies {
+    // 🌐 Spring Boot Web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // 🔒 Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // 🧩 JPA (for @Entity, @Table, etc.)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // 🧩 Spring Modulith
+    implementation 'org.springframework.modulith:spring-modulith-starter-core'
+
+    // ⚙️ Netflix DGS GraphQL
+    implementation 'com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter:9.1.3'
+
+    // 🧠 Fix GraphQL dataloader conflict
+    implementation 'com.graphql-java:java-dataloader:3.3.0'
+
+    // 🧰 Lombok + Dev Tools
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+    // 🧾 Configuration Processor
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // 🗄️ Database Driver (choose one)
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    // runtimeOnly 'org.postgresql:postgresql'
+
+    // 🧪 Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.modulith:spring-modulith-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.modulith:spring-modulith-bom:${springModulithVersion}"
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        // ✅ Force consistent GraphQL versions
+        force 'com.graphql-java:java-dataloader:3.3.0'
+    }
+}
+
+// 🎯 DGS Codegen (GraphQL client generation)
+generateJava {
+    schemaPaths = ["${projectDir}/src/main/resources/graphql-client"]
+    packageName = 'com.example.booknetworkapi.codegen'
+    generateClient = true
+}
+
+// 🧪 Enable JUnit 5
+tasks.named('test') {
+    useJUnitPlatform()
+}
