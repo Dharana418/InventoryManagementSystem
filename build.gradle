@@ -1,7 +1,7 @@
 plugins {
-    id 'java'
     id 'org.springframework.boot' version '3.5.6'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
     id 'com.netflix.dgs.codegen' version '7.0.3'
     id 'org.graalvm.buildtools.native' version '0.10.6'
 }
@@ -31,23 +31,27 @@ ext {
 }
 
 dependencies {
-    // 🌐 Spring Boot Web
+    // 🌐 Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     // 🔒 Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    // 🧩 JPA (Database ORM)
+    // 🧩 JPA (ORM)
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     // 🧩 Spring Modulith
-    implementation 'org.springframework.modulith:spring-modulith-starter-core'
+    implementation "org.springframework.modulith:spring-modulith-starter-core"
 
     // ⚙️ Netflix DGS GraphQL
     implementation 'com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter:9.1.3'
 
     // 🧠 Fix GraphQL dataloader conflict
     implementation 'com.graphql-java:java-dataloader:3.3.0'
+
+    // 🧭 Swagger / OpenAPI (SpringDoc for Spring Boot 3)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     // 🧰 Lombok + Dev Tools
     compileOnly 'org.projectlombok:lombok'
@@ -61,15 +65,15 @@ dependencies {
     // 🗄️ MySQL Driver
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    // 🔑 JSON Web Token (JJWT)
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
     // 🧪 Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.modulith:spring-modulith-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    // 🔑 JSON Web Token (JJWT) — Required for Jwts, Claims, SignatureAlgorithm
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 }
 
 dependencyManagement {
@@ -80,7 +84,7 @@ dependencyManagement {
 
 configurations.all {
     resolutionStrategy {
-        // ✅ Force consistent GraphQL versions
+        // ✅ Ensure consistent GraphQL versions
         force 'com.graphql-java:java-dataloader:3.3.0'
     }
 }
